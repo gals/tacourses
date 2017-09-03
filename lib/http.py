@@ -4,7 +4,6 @@
 import os
 from hashlib import md5
 import cPickle as pickle
-
 import requests
 
 DEFAULT_CACHE_DIR = "cache"
