@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<head>
+	<title>דו"ח קורסים</title>
+	<meta charset="utf-8">
+	<style>
+		@import url(https://fonts.googleapis.com/earlyaccess/opensanshebrew.css);
+
+		/* http://meyerweb.com/eric/tools/css/reset/ 
+		   v2.0 | 20110126
+		   License: none (public domain)
+		*/
+
+		html, body, div, span, applet, object, iframe,
+		h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+		a, abbr, acronym, address, big, cite, code,
+		del, dfn, em, img, ins, kbd, q, s, samp,
+		small, strike, strong, sub, sup, tt, var,
+		b, u, i, center,
+		dl, dt, dd, ol, ul, li,
+		fieldset, form, label, legend,
+		table, caption, tbody, tfoot, thead, tr, th, td,
+		article, aside, canvas, details, embed, 
+		figure, figcaption, footer, header, hgroup, 
+		menu, nav, output, ruby, section, summary,
+		time, mark, audio, video {
+			margin: 0;
+			padding: 0;
+			border: 0;
+			font-size: 100%;
+			font: inherit;
+			vertical-align: baseline;
+		}
+		/* HTML5 display-role reset for older browsers */
+		article, aside, details, figcaption, figure, 
+		footer, header, hgroup, menu, nav, section {
+			display: block;
+		}
+		body {
+			line-height: 1;
+		}
+		ol, ul {
+			list-style: none;
+		}
+		blockquote, q {
+			quotes: none;
+		}
+		blockquote:before, blockquote:after,
+		q:before, q:after {
+			content: '';
+			content: none;
+		}
+		table {
+			border-collapse: collapse;
+			border-spacing: 0;
+		}
+
+		html {
+			background: background-color: #EEEEEE;
+			direction: rtl;
+			font-family: 'Open Sans Hebrew', sans-serif;
+			font-size: 14px;
+			letter-spacing: .04em;
+			text-align: right;
+		}
+
+		.course {
+			margin-bottom: 16px;
+		}
+
+		.course-title {
+			border-bottom: 1px solid rgba(0,0,0,.12);
+			padding-bottom: 16px;
+			padding-top: 16px;
+		}
+
+		.course-title__name {
+			font-size: 20px;
+			margin-right: 12px;
+		}
+
+		.course-title__id {
+			margin-right: 8px;
+		}
+
+		.proposal {
+			border-bottom: 1px solid rgba(0,0,0,.12);
+			display: flex;
+			padding-bottom: 16px;
+			padding-top: 16px;
+		}
+
+		.proposal__id {
+			background: #bdbdbd;
+		    border-radius: 50%;
+		    font-weight: bold;
+		    height: 40px;
+		    line-height: 40px;
+		    margin-left: 12px;
+		    margin-right: 12px;
+		    text-align: center;
+		    width: 40px;
+		}
+
+		.proposal-staff {
+		}
+
+		.proposal-staff__lecturers {
+			font-size: 16px;
+		}
+
+		.proposal-staff__assistants {
+			color: rgba(0,0,0,.54);
+			line-height: 18px;
+		}
+	</style>
+</head>
+<body>
+
+{% for proposals in course_proposals.itervalues() %}
+	{% for course in proposals %}
+	{% if loop.index == 1 %}
+	<div class="course">
+		<div class="course-title">
+			<span class="course-title__name">{{ course.title }}</span>
+			<span class="course-title__id">{{ course.course_id }}</span>
+		</div>
+	{% endif %}
+		<div class="proposal">
+			<div class="proposal__id">{{ loop.index }}</div>
+			<div class="proposal-staff">
+				<p class="proposal-staff__lecturers">{{ course.staff.lecturers|join(", ") }}</p>
+				<p class="proposal-staff__assistants">{{ course.staff.assistants|join(", ") }}</p>
+			</div>
+		</div>
+	{% if loop.last %}
+	</div>
+	{% endif %}
+	{% endfor %}
+{% endfor %}
+
+</body>
+</html>
