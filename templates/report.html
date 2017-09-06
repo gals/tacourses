@@ -63,6 +63,12 @@
 			text-align: right;
 		}
 
+		.container {
+			margin: auto;
+			padding: 16px 0;
+			width: 60%;
+		}
+
 		.course {
 			margin-bottom: 16px;
 		}
@@ -89,7 +95,11 @@
 			padding-top: 16px;
 		}
 
-		.proposal__id {
+		.proposal.last {
+			border: none;
+		}
+
+		.proposal-id {
 			background: #bdbdbd;
 		    border-radius: 50%;
 		    font-weight: bold;
@@ -102,6 +112,8 @@
 		}
 
 		.proposal-staff {
+			flex-grow: 1;
+			margin-right: 16px;
 		}
 
 		.proposal-staff__lecturers {
@@ -110,14 +122,23 @@
 
 		.proposal-staff__assistants {
 			color: rgba(0,0,0,.54);
-			line-height: 18px;
+			line-height: 24px;
+		}
+
+		.proposal-score {
+			align-items: flex-end;
+			flex-flow: column;
+			font-size: 24px;
+			line-height: 40px;
+			margin-right: 36px;
 		}
 	</style>
 </head>
 <body>
 
+<div class="container">
 {% for courses in grouped.itervalues() %}
-	{% for course in courses %}
+	{% for table_id, course in courses.iteritems() %}
 	{% if loop.index == 1 %}
 	<div class="course">
 		<div class="course-title">
@@ -125,11 +146,14 @@
 			<span class="course-title__id">{{ course.course_id }}</span>
 		</div>
 	{% endif %}
-		<div class="proposal">
-			<div class="proposal__id">{{ loop.index }}</div>
+		<div class="proposal{% if loop.last %} last{% endif %}">
+			<div class="proposal-id">{{ table_id }}</div>
 			<div class="proposal-staff">
 				<p class="proposal-staff__lecturers">{{ course.staff.lecturers|join(", ") }}</p>
 				<p class="proposal-staff__assistants">{{ course.staff.assistants|join(", ") }}</p>
+			</div>
+			<div class="proposal-score">
+				ציון: {{ course._score|float }}
 			</div>
 		</div>
 	{% if loop.last %}
@@ -137,6 +161,7 @@
 	{% endif %}
 	{% endfor %}
 {% endfor %}
+</div>
 
 </body>
 </html>

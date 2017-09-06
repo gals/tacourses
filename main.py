@@ -3,10 +3,10 @@
 """
 
 import codecs
-from itertools import imap
 import jinja2
 
 from timetables import TimetableFetcher
+import score
 
 def fetch_timetables(url, semester, name_predicate=None):
 	"""
@@ -23,9 +23,9 @@ def group_timetables(tables):
 		for course in table.iter_courses():
 			course_id = course.course_id
 			if not course_id in grouped:
-				grouped[course_id] = []
+				grouped[course_id] = {}
 
-			grouped[course_id].append(course)
+			grouped[course_id][i + 1] = course
 
 	return grouped
 
@@ -40,31 +40,30 @@ def render_template(filename,
 	template = env.get_template(filename)
 	return template.render(**context)
 
-def contains_strings(s, strings):
-	"""
-	"""
-	return any(imap(s.__contains__, strings))
-
-def calculate_score(
-	course,
-	goodnames=None,
-	badnames=None,
-	neutralnames=None):
-	"""
-	"""
-	goodnames = goodnames or []
-	badnames = badnames or []
-	neutralnames = neutralnames or []
-
-	# TODO: Calculate score with SymPy?
-
 def create_report(
 	filename,
-	timetables):
+	timetables,
+	good_names=None,
+	neutral_names=None,
+	bad_names=None):
 	"""
 	"""
+	good_names = good_names or []
+	neutral_names = neutral_names or []
+	bad_names = bad_names or []
+
+	grouped = group_timetables(timetables)
+
+	for courses in grouped.itervalues():
+		for table_id, course in courses.iteritems():
+			course._score = score.calculate(
+				course,
+				good_names,
+				neutral_names,
+				bad_names)
+
 	context = {
-		"grouped": group_timetables(timetables)
+		"grouped": grouped,
 	}
 
 	with codecs.open(filename, "w", "utf-8") as f:
@@ -73,19 +72,29 @@ def create_report(
 def main():
 	"""
 	"""
+	good_names = []
+	neutral_names = []
+	bad_names = []
+
 	timetables = fetch_timetables(
 		"https://www.eng.tau.ac.il/yedion/2017-18/eng_manot_2017_sem1.htm",
 		semester=1,
 		name_predicate=u"0512-0101")
 
-	create_report("report-1.html", timetables)
+	create_report("report-1.html", timetables,
+		good_names=good_names,
+		neutral_names=neutral_names,
+		bad_names=bad_names)
 
 	timetables = fetch_timetables(
 		"https://www.eng.tau.ac.il/yedion/2017-18/eng_manot_2017_sem2.htm",
 		semester=2,
 		name_predicate=u"0512-0102")
 
-	create_report("report-2.html", timetables)
+	create_report("report-2.html", timetables,
+		good_names=good_names,
+		neutral_names=neutral_names,
+		bad_names=bad_names)
 
 if __name__ == "__main__":
 	main()
