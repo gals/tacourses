@@ -3,7 +3,7 @@
 """
 
 import codecs
-from itertools import ifilter
+from itertools import imap
 import jinja2
 
 from timetables import TimetableFetcher
@@ -12,28 +12,22 @@ def fetch_timetables(url, semester, name_predicate=None):
 	"""
 	"""
 	fetcher = TimetableFetcher(url, semester)
-	timetables = fetcher.timetables()
+	return fetcher.timetables(
+		name_predicate=name_predicate)
 
-	if name_predicate:
-		return ifilter(
-			lambda t: name_predicate in t.name,
-			timetables)
-	
-	return timetables
-
-def group_proposals(tables):
+def group_timetables(tables):
 	"""
 	"""
-	proposals = {}
+	grouped = {}
 	for i, table in enumerate(tables):
 		for course in table.iter_courses():
 			course_id = course.course_id
-			if not course_id in proposals:
-				proposals[course_id] = []
+			if not course_id in grouped:
+				grouped[course_id] = []
 
-			proposals[course_id].append(course)
+			grouped[course_id].append(course)
 
-	return proposals
+	return grouped
 
 def render_template(filename, 
 	templates_dir="templates", **context):
@@ -46,11 +40,31 @@ def render_template(filename,
 	template = env.get_template(filename)
 	return template.render(**context)
 
-def create_report(filename, timetables):
+def contains_strings(s, strings):
+	"""
+	"""
+	return any(imap(s.__contains__, strings))
+
+def calculate_score(
+	course,
+	goodnames=None,
+	badnames=None,
+	neutralnames=None):
+	"""
+	"""
+	goodnames = goodnames or []
+	badnames = badnames or []
+	neutralnames = neutralnames or []
+
+	# TODO: Calculate score with SymPy?
+
+def create_report(
+	filename,
+	timetables):
 	"""
 	"""
 	context = {
-		"course_proposals": group_proposals(timetables)
+		"grouped": group_timetables(timetables)
 	}
 
 	with codecs.open(filename, "w", "utf-8") as f:

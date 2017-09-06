@@ -116,8 +116,8 @@
 </head>
 <body>
 
-{% for proposals in course_proposals.itervalues() %}
-	{% for course in proposals %}
+{% for courses in grouped.itervalues() %}
+	{% for course in courses %}
 	{% if loop.index == 1 %}
 	<div class="course">
 		<div class="course-title">

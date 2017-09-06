@@ -3,6 +3,7 @@
 """
 
 from collections import MutableMapping, namedtuple
+from itertools import ifilter
 import re
 
 import lib.http
@@ -253,10 +254,17 @@ class TimetableFetcher(object):
 			end_hour,
 			room)
 
-	def timetables(self):
+	def timetables(self, name_predicate=None):
 		"""
 		"""
-		for link in self._timetable_links():
+		if name_predicate:
+			links = ifilter(
+				lambda l: name_predicate in l.name,
+				self._timetable_links())
+		else:
+			links = self._timetable_links()
+
+		for link in links:
 			timetable = Timetable(link.name)
 
 			r = self._http.get(link.url)
