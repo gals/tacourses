@@ -62,19 +62,22 @@ class Timetable(MutableMapping):
 	"""
 	"""
 
-	def __init__(self, name=None):
+	def __init__(self, name=None, table_id=None):
 		"""
 		"""
 		self.name = name
+		self.table_id = table_id
+
 		days = {}
 		for i in xrange(1, 8):
 			days[i] = {}
 		self._days = days
 
 	def __repr__(self):
-		return "<%s name=%r>" % (
+		return "<%s name=%r id=%r>" % (
 			self.__class__.__name__,
-			self.name)
+			self.name,
+			self.table_id)
 
 	def __delitem__(self, key):
 		"""
@@ -145,6 +148,7 @@ class Timetable(MutableMapping):
 		return list(self.iter_courses())
 
 TimetableLink = namedtuple("TimetableLink", ["id", "name", "url"])
+
 class TimetableFetcher(object):
 	"""
 	"""
@@ -254,18 +258,21 @@ class TimetableFetcher(object):
 			end_hour,
 			room)
 
-	def timetables(self, name_predicate=None):
+	def timetables(self, name=None):
 		"""
 		"""
-		if name_predicate:
+		if name:
 			links = ifilter(
-				lambda l: name_predicate in l.name,
+				lambda l: name in l.name,
 				self._timetable_links())
 		else:
 			links = self._timetable_links()
 
-		for link in links:
-			timetable = Timetable(link.name)
+		for i, link in enumerate(links):
+			table_id = i + 1
+			timetable = Timetable(
+				link.name, 
+				table_id=table_id)
 
 			r = self._http.get(link.url)
 			r.raise_for_status()

@@ -63,6 +63,13 @@
 			text-align: right;
 		}
 
+		h2 {
+			border-bottom: 1px solid rgba(0,0,0,.12);
+			font-size: 36px;
+			padding-bottom: 16px;
+			padding-top: 16px;
+		}
+
 		.container {
 			margin: auto;
 			padding: 16px 0;
@@ -88,18 +95,21 @@
 			margin-right: 8px;
 		}
 
-		.proposal {
+		.proposal,
+		.timetable {
 			border-bottom: 1px solid rgba(0,0,0,.12);
 			display: flex;
 			padding-bottom: 16px;
 			padding-top: 16px;
 		}
 
-		.proposal.last {
+		.proposal.last,
+		.timetable.last {
 			border: none;
 		}
 
-		.proposal-id {
+		.proposal-id,
+		.timetable-id {
 			background: #bdbdbd;
 		    border-radius: 50%;
 		    font-weight: bold;
@@ -125,20 +135,30 @@
 			line-height: 24px;
 		}
 
-		.proposal-score {
+		.proposal-score,
+		.timetable-score {
 			align-items: flex-end;
 			flex-flow: column;
 			font-size: 24px;
 			line-height: 40px;
 			margin-right: 36px;
 		}
+
+		.timetable-name {
+			flex-grow: 1;
+			font-size: 16px;
+			line-height: 40px;
+			margin-right: 16px;
+		}
 	</style>
 </head>
 <body>
 
 <div class="container">
-{% for courses in grouped.itervalues() %}
-	{% for table_id, course in courses.iteritems() %}
+	<h2>עפ"י קורסים</h2>
+
+{% for timetables in courses.itervalues() %}
+	{% for table_id, course in timetables.iteritems() %}
 	{% if loop.index == 1 %}
 	<div class="course">
 		<div class="course-title">
@@ -153,13 +173,30 @@
 				<p class="proposal-staff__assistants">{{ course.staff.assistants|join(", ") }}</p>
 			</div>
 			<div class="proposal-score">
-				ציון: {{ course._score|float }}
+				ציון: {{ '%0.3f'|format(course._score|float) }}
 			</div>
 		</div>
 	{% if loop.last %}
 	</div>
 	{% endif %}
 	{% endfor %}
+{% endfor %}
+
+	<h2>עפ"י הצעות</h2>
+{% for table in timetables %}
+	<div>
+		<div class="timetable{% if loop.last %} last{% endif %}">
+			<div class="timetable-id">{{ table.table_id }}</div>
+			<div class="timetable-name">
+				{{ table.name }}
+			</div>
+			<div class="timetable-score">
+				ציון: {{ '%0.3f'|format(table._score|float) }}
+			</div>
+		</div>
+	{% if loop.last %}
+	</div>
+	{% endif %}
 {% endfor %}
 </div>
 
