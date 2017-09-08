@@ -26,5 +26,4 @@ def split(html, tag_name):
 			parts.append("".join(buff))
 			buff = []
 
-	if buff:
-		return parts + buff
+	return parts + buff
